@@ -20,6 +20,7 @@ THRESHOLD = 0.8
 ALTURA_MIN = 1
 LARGURA_MIN = 1
 N_PIXELS_MIN = 1
+sys.setrecursionlimit(10**6)
 
 #===============================================================================
 
@@ -62,6 +63,37 @@ respectivamente: topo, esquerda, baixo e direita.'''
 
     # TODO: escreva esta função.
     # Use a abordagem com flood fill recursivo.
+
+    # label image with recursive flood fill
+    componentes = []
+    label = 1.1
+    size_y = img.shape[0]
+    size_x = img.shape[1]
+
+    for y in range(size_y):
+        for x in range(size_x):
+            if img[y,x] == 1:
+                label += 1
+                componentes.append(inunda(img, x, y, label, size_x, size_y))
+    return componentes
+
+def inunda(img, x, y, label, size_x, size_y):
+
+    if not x < size_x and y < size_y and x >= 0 and y >= 0:
+        return None;
+
+    img[y][x] = label;
+
+    if y > 0 and img[y-1][x] == 1:
+        inunda(img, x, y-1, label, size_x, size_y)
+    if y < size_y and img[y+1][x] == 1:
+        inunda(img, x, y+1, label, size_x, size_y)
+    if x > 0 and img[y][x-1] == 1:
+        inunda(img, x-1, y, label, size_x, size_y)
+    if x < size_x and img[y][x+1] == 1:
+        inunda(img, x+1, y, label, size_x, size_y)
+
+    return {'label': label, 'n_pixels': np.sum(img == label), 'T': y, 'L': x, 'B': y, 'R': x}
 
 #===============================================================================
 
