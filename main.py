@@ -46,6 +46,25 @@ def binariza(img, threshold):
 # -------------------------------------------------------------------------------
 
 
+def inicializa_componente(label, size_y, size_x, y, x):
+    return {
+        "label": label,
+        "n_pixels": 0,
+        "T": size_y,
+        "L": size_x,
+        "B": y,
+        "R": x,
+    }
+
+
+def validar_componente(componente, largura_min, altura_min, n_pixels_min):
+    return (
+        componente["n_pixels"] >= n_pixels_min
+        and componente["B"] - componente["T"] >= altura_min
+        and componente["R"] - componente["L"] >= largura_min
+    )
+
+
 def rotula(img, largura_min, altura_min, n_pixels_min):
     """Rotulagem usando flood fill. Marca os objetos da imagem com os valores
     [0.1,0.2,etc].
@@ -67,6 +86,7 @@ def rotula(img, largura_min, altura_min, n_pixels_min):
     # Use a abordagem com flood fill recursivo.
 
     # label image with recursive flood fill
+
     componentes = []
     label = 1.1
     size_y = img.shape[0]
@@ -76,33 +96,19 @@ def rotula(img, largura_min, altura_min, n_pixels_min):
         for x in range(size_x):
             if img[y, x] == 1:
 
-                componente = {
-                    "label": label,
-                    "n_pixels": 0,
-                    "T": size_y,
-                    "L": size_x,
-                    "B": y,
-                    "R": x,
-                }
+                componente = inicializa_componente(label, size_y, size_x, y, x)
+
                 inunda(img, x, y, label, componente)
 
-                if (
-                    componente["n_pixels"] >= n_pixels_min
-                    and componente["B"] - componente["T"] >= altura_min
-                    and componente["R"] - componente["L"] >= largura_min
+                if validar_componente(
+                    componente, largura_min, altura_min, n_pixels_min
                 ):
                     componentes.append(componente)
                     label += 1
     return componentes
 
 
-def inunda(img, x, y, label, componente):
-
-    size_y, size_x, _ = img.shape
-
-    img[y][x] = label
-    componente["n_pixels"] += 1
-
+def atribui_valores_componente(componente, x, y):
     if x < componente["L"]:
         componente["L"] = x
     if x > componente["R"]:
@@ -112,8 +118,21 @@ def inunda(img, x, y, label, componente):
     if y > componente["B"]:
         componente["B"] = y
 
+    componente["n_pixels"] += 1
+
+
+def esta_dentro_da_imagem(img, x, y):
+    return x < img.shape[1] and y < img.shape[0] and x >= 0 and y >= 0
+
+
+def inunda(img, x, y, label, componente):
+
+    img[y][x] = label
+
+    atribui_valores_componente(componente, x, y)
+
     for (x, y) in [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]:
-        if img[y][x] == 1 and (x < size_x and y < size_y and x >= 0 and y >= 0):
+        if img[y][x] == 1 and esta_dentro_da_imagem(img, x, y):
             inunda(img, x, y, label, componente)
 
 
