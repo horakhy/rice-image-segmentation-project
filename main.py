@@ -38,8 +38,6 @@ def binariza(img, threshold):
     # Dica/desafio: usando a função np.where, dá para fazer a binarização muito
     # rapidamente, e com apenas uma linha de código!
 
-    # binarize image with numpy
-
     return np.where(img > threshold, 1.0, 0.0)
 
 
