@@ -17,10 +17,9 @@ INPUT_IMAGE = "arroz.bmp"
 # TODO: ajuste estes parâmetros!
 NEGATIVO = False
 THRESHOLD = 0.8
-ALTURA_MIN = 8
-LARGURA_MIN = 8
-N_PIXELS_MIN = 8
-sys.setrecursionlimit(10**6)
+ALTURA_MIN = 4
+LARGURA_MIN = 4
+N_PIXELS_MIN = 4
 
 # ===============================================================================
 
@@ -102,7 +101,7 @@ def rotula(img, largura_min, altura_min, n_pixels_min):
     return componentes
 
 
-def atribui_valores_componente(componente, x, y):
+def atualiza_valores_componente(componente, x, y):
     if x < componente["L"]:
         componente["L"] = x
     if x > componente["R"]:
@@ -119,13 +118,16 @@ def esta_dentro_da_imagem(img, x, y):
     return x < img.shape[1] and y < img.shape[0] and x >= 0 and y >= 0
 
 
+def vizinhos(x,y):
+    return [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]
+
 def inunda(img, x, y, label, componente):
 
     img[y][x] = label
 
-    atribui_valores_componente(componente, x, y)
+    atualiza_valores_componente(componente, x, y)
 
-    for (x, y) in [(x - 1, y), (x + 1, y), (x, y - 1), (x, y + 1)]:
+    for (x, y) in vizinhos(x,y):
         if img[y][x] == 1 and esta_dentro_da_imagem(img, x, y):
             inunda(img, x, y, label, componente)
 
@@ -152,7 +154,7 @@ def main():
     # Segmenta a imagem.
     if NEGATIVO:
         img = 1 - img
-    # img = binariza(img, THRESHOLD)
+    img = binariza(img, THRESHOLD)
     cv2.imshow("01 - binarizada", img)
     cv2.imwrite("01 - binarizada.png", img * 255)
 
