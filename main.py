@@ -85,8 +85,6 @@ def rotula(img, largura_min, altura_min, n_pixels_min):
     # TODO: escreva esta função.
     # Use a abordagem com flood fill recursivo.
 
-    # label image with recursive flood fill
-
     componentes = []
     label = 1.1
     size_y = img.shape[0]
@@ -100,9 +98,7 @@ def rotula(img, largura_min, altura_min, n_pixels_min):
 
                 inunda(img, x, y, label, componente)
 
-                if validar_componente(
-                    componente, largura_min, altura_min, n_pixels_min
-                ):
+                if validar_componente(componente, largura_min, altura_min, n_pixels_min):
                     componentes.append(componente)
                     label += 1
     return componentes
