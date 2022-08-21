@@ -152,7 +152,7 @@ def main():
     # Segmenta a imagem.
     if NEGATIVO:
         img = 1 - img
-    img = binariza(img, THRESHOLD)
+    # img = binariza(img, THRESHOLD)
     cv2.imshow("01 - binarizada", img)
     cv2.imwrite("01 - binarizada.png", img * 255)
 
